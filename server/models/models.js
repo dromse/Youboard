@@ -24,12 +24,15 @@ const Task = sequelize.define('task', {
 })
 
 User.hasMany(Table)
-Table.hasMany(User)
+Table.belongsTo(User)
+
+User.hasMany(Task)
+Task.belongsTo(User)
 
 Table.hasMany(List)
-List.hasOne(Table)
+List.belongsTo(Table)
 
 List.hasMany(Task)
-Task.hasOne(List)
+Task.belongsTo(List)
 
 export default { User, Table, List, Task }
