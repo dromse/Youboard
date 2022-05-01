@@ -1,7 +1,7 @@
-import ApiError from '../errors/ApiError'
-import bcrypt from 'bcrypt'
-import { User } from '../models/models'
-import jwt from 'jsonwebtoken'
+const ApiError = require('../errors/ApiError')
+const bcrypt = require('bcrypt')
+const { User } = require('../models/models')
+const jwt = require('jsonwebtoken')
 
 const generateToken = (id, email, role) => {
     return jwt.sign({ id, email, role }, process.env.SECRET_KEY, {
