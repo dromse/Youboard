@@ -4,7 +4,7 @@ const tableContoller = require('../controllers/tableContoller')
 const router = new Router()
 
 // return all tables available for user.
-router.post('/', tableContoller.getAll)
-router.post('/:id', tableContoller.getOne)
+// router.post('/', tableContoller.getAll)
+// router.post('/:id', tableContoller.getOne)
 
 module.exports = router

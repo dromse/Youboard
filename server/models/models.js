@@ -35,4 +35,4 @@ List.belongsTo(Table)
 List.hasMany(Task)
 Task.belongsTo(List)
 
-export default { User, Table, List, Task }
+module.exports = { User, Table, List, Task }
