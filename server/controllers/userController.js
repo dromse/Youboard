@@ -62,4 +62,4 @@ class UserController {
     }
 }
 
-export default UserController
+module.exports = UserController
