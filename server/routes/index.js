@@ -8,4 +8,4 @@ const router = new Router()
 router.use('/user', userRouter)
 router.use('/table', tableRouter)
 
-export default router
+module.exports = router
