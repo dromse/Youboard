@@ -19,7 +19,7 @@ class UserController {
             )
         }
 
-        const candidate = await User.fineOne({ where: { email } })
+        const candidate = await User.findOne({ where: { email } })
         if (candidate) {
             return next(ApiError.badRequest('Email is already registered.'))
         }
@@ -59,6 +59,11 @@ class UserController {
     async check(req, res, next) {
         const token = generateToken(req.user.id, req.user.email, req.user.role)
         return res.json({ token })
+    }
+
+    async getAll(req, res, next) {
+        const users = await User.findAll() 
+        return res.json(users)
     }
 }
 
