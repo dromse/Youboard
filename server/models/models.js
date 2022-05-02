@@ -5,6 +5,8 @@ const User = sequelize.define('user', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     email: { type: DataTypes.STRING, unique: true },
     password: { type: DataTypes.STRING },
+    isActivated: { type: DataTypes.BOOLEAN, defaultValue: false }, 
+    activationLink: { type: DataTypes.STRING }, 
     role: { type: DataTypes.STRING, defaultValue: 'USER' },
 })
 
@@ -23,8 +25,15 @@ const Task = sequelize.define('task', {
     title: { type: DataTypes.STRING },
 })
 
+const Token = sequelize.define('token', {
+    refreshtToken: { type: DataTypes.STRING, allowNull: false }
+})
+
 User.hasMany(Table)
 Table.belongsTo(User)
+
+User.hasOne(Token)
+Token.belongsTo(User)
 
 User.hasMany(Task)
 Task.belongsTo(User)
@@ -35,4 +44,4 @@ List.belongsTo(Table)
 List.hasMany(Task)
 Task.belongsTo(List)
 
-module.exports = { User, Table, List, Task }
+module.exports = { User, Table, List, Task, Token }
