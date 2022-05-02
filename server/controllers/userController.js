@@ -1,69 +1,92 @@
-const ApiError = require('../errors/ApiError')
-const bcrypt = require('bcrypt')
-const { User } = require('../models/models')
-const jwt = require('jsonwebtoken')
+const { validationResult } = require('express-validator')
 
-const generateToken = (id, email, role) => {
-    return jwt.sign({ id, email, role }, process.env.SECRET_KEY, {
-        expiresIn: '24h',
-    })
-}
+const ApiError = require('../errors/ApiError')
+const userService = require('../service/userService')
+
+const maxAgeTime = 30 * 24 * 60 * 60 * 1000
 
 class UserController {
-    async signUp(req, res, next) {
-        const { email, password, role } = req.body
+    async signup(req, res, next) {
+        try {
+            const errors = validationResult(req)
 
-        if (!email || !password) {
-            return next(
-                ApiError.badRequest('Email or password is not correct.'),
-            )
+            if (!errors.isEmpty()) {
+                return next(
+                    ApiError.BadRequest('validation failed.', errors.array()),
+                )
+            }
+
+            const { email, password } = req.body
+
+            const userData = await userService.signup(email, password)
+
+            res.cookie('refreshToken', userData.refreshToken, {
+                maxAge: maxAgeTime,
+                httpOnly: true,
+            })
+
+            return res.json(userData)
+        } catch (e) {
+            next(e)
         }
-
-        const candidate = await User.findOne({ where: { email } })
-        if (candidate) {
-            return next(ApiError.badRequest('Email is already registered.'))
-        }
-
-        const hashPassword = await bcrypt.hash(password, 3)
-        const user = await User.create({
-            email,
-            password: hashPassword,
-            role,
-        })
-
-        const token = generateToken(user.id, user.email, user.role)
-
-        return res.json({ token })
     }
 
-    async logIn(req, res, next) {
-        const { email, password } = req.body
+    async login(req, res, next) {
+        try {
+            const { email, password } = req.body
+            const userData = await userService.login(email, password)
 
-        const user = await User.findOne({ where: { email } })
-
-        if (!user) {
-            return next(
-                ApiError.internalError('User with this name was not found.'),
-            )
+            return res.cookie('refreshToken', userData.refreshToken, {
+                maxAge: maxAgeTime,
+                httpOnly: true,
+            })
+        } catch (e) {
+            next(e)
         }
-
-        let comparePassword = bcrypt.compareSync(password, user.password)
-        if (!comparePassword) {
-            return next(ApiError.internalError('Password does not match.'))
-        }
-
-        const token = generateToken(user.id, user.email, user.role)
-        return res.json({ token })
-    }
-
-    async check(req, res, next) {
-        const token = generateToken(req.user.id, req.user.email, req.user.role)
-        return res.json({ token })
     }
 
     async getAll(req, res, next) {
-        const users = await User.findAll() 
-        return res.json(users)
+        try {
+            const users = await userService.getAll()
+            return res.json(users)
+        } catch (e) {
+            next(e)
+        }
+    }
+
+    async logout(req, res, next) {
+        try {
+            const { refreshToken } = req.cookies
+            const token = await userService.logout(refreshToken)
+            res.clearCookie('refreshToken')
+            return res.json(token)
+        } catch (e) {
+            next(e)
+        }
+    }
+    
+    async activate(req, res, next) {
+        try {
+            const activationLink = req.params.link
+            await userService.activate(activationLink)
+            return res.redirect(process.env.CLIENT_URL)
+        } catch (e) {
+            next(e)
+        }
+    }
+    async refresh(req, res, next) {
+        try {
+            const { refreshToken } = req.cookies
+            const userData = await userService.refresh(refreshToken)
+
+            res.cookie('refreshToken', userData.refreshToken, {
+                maxAge: maxAgeTime,
+            })
+
+            return res.json(userData)
+        } catch (e) {
+            next(e)
+        }
     }
 }
 
