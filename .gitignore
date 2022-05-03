@@ -2,3 +2,5 @@ server/node_modules/
 client/node_modules/
 
 server/.dev.env
+
+client/src/mockData.js
