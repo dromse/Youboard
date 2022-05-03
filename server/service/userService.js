@@ -63,7 +63,9 @@ class UserController {
     }
 
     async activate(activationLink) {
-        const user = await User.findOne({ where: activationLink })
+        const user = await User.findOne({
+            where: { activationLink: activationLink },
+        })
 
         if (!user) {
             throw ApiError.BadRequest('Non correct activation link.')

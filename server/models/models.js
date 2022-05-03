@@ -26,7 +26,7 @@ const Task = sequelize.define('task', {
 })
 
 const Token = sequelize.define('token', {
-    refreshtToken: { type: DataTypes.STRING, allowNull: false }
+    refreshToken: { type: DataTypes.STRING, allowNull: false }
 })
 
 User.hasMany(Table)

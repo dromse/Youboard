@@ -40,28 +40,30 @@ class TokenService {
     }
 
     async saveToken(userId, refreshToken) {
-        const tokenData = await Token.findOne({ where: { userId: userId } })
-        console.log(tokenData)
+        const tokenData = await Token.findOne({ where: { userId } })
 
         if (tokenData) {
             tokenData.refreshToken = refreshToken
             return tokenData.save()
         }
 
-        const token = await Token.create({ where: userId, refreshToken })
+        const token = await Token.create({ userId, refreshToken })
+        token.save()
         return token
     }
 
     async removeToken(refreshToken) {
         const tokenData = await Token.findOne({
-            where: { refreshToken: refreshToken },
+            where: { refreshToken },
         })
         tokenData.destroy()
         return tokenData
     }
 
     async findToken(token) {
-        const tokenData = await Token.findOne({ where: {refreshToken: token }})
+        const tokenData = await Token.findOne({
+            where: { refreshToken: token },
+        })
         return tokenData
     }
 }
