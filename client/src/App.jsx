@@ -1,5 +1,5 @@
 import './App.scss'
-import Table from './components/table/table.js'
+import Table from './components/table/table.jsx'
 
 function App() {
     return (
