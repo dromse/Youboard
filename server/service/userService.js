@@ -53,7 +53,7 @@ class UserController {
             return next(ApiError.BadRequest('Password does not match.'))
         }
 
-        const token = generateToken(user.id, user.email, user.role)
+        const token = generateToken(user.id, user.email)
         return token
     }
 
