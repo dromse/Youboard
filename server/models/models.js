@@ -7,7 +7,6 @@ const User = sequelize.define('user', {
     password: { type: DataTypes.STRING },
     isActivated: { type: DataTypes.BOOLEAN, defaultValue: false },
     activationLink: { type: DataTypes.STRING },
-    role: { type: DataTypes.STRING, defaultValue: 'USER' },
 })
 
 const Table = sequelize.define('table', {
@@ -58,13 +57,13 @@ Task.belongsTo(List)
 
 // Role
 User.hasOne(Role)
-Role.belongsToMany(User)
+Role.belongsTo(User)
 
 User.hasMany(TableRole)
 TableRole.belongsTo(User)
 
 Table.hasOne(TableRole)
-TableRole.belongsToMany(Table)
+TableRole.belongsTo(Table)
 
 TableRole.hasMany(Role)
 Role.belongsTo(TableRole)
